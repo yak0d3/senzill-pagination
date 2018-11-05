@@ -1,0 +1,26 @@
+{
+  "name": "senzill-pagination",
+  "version": "1.0.0",
+  "description": "Senzill-Pagination is an easy to integrate jQuery pagination plugin.",
+  "main": "senzill-pagination.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yak0d3/senzill-pagination.git"
+  },
+  "keywords": [
+    "pagination",
+    "jquery pagination",
+    "senzill",
+    "easy pagination",
+    "pagination"
+  ],
+  "author": "yak0d3 <contact.raedyak@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yak0d3/senzill-pagination/issues"
+  },
+  "homepage": "https://github.com/yak0d3/senzill-pagination#readme"
+}
