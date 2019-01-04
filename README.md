@@ -32,7 +32,7 @@ npm install --save senzill-pagination
 <head>
 	...
     <script src="jquery.js"></script>
-	<script src="https://cdn.jsdelivr.net/gh/yak0d3/senzill-pagination@2.0.0/senzill-pagination.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/yak0d3/senzill-pagination@2.0.0/senzill-pagination.js"></script>
 </head>
 ```
 
