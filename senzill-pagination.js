@@ -1,134 +1,328 @@
 /************************************************************/
-/* senzill-pagination v1.0.0 Beta                          */
-/* Coded by: yak0d3                                       */
-/* Email: contact.raedyak@gmail.com                      */
-/* Github: https://github.com/yak0d3/senzill-pagination */
-/* Licence: MIT                                        */
+/* senzill-pagination v2.0.0                               */
+/* Author: yak0d3 <contact.raedyak@gmail.com>             */
+/* Github: https://github.com/yak0d3/senzill-pagination  */
+/* Licence: MIT                                         */
 /******************************************************/
 
 (function($){
     $.fn.extend({
         
-        senzill: function(options) {
+        senzill: function(settings) {
 
             var defaults = {
                 elPerPage: 4, //The number of elements to show per page
+                nav: null,
+                panel: null,
+                nums: true,
+                showOptions: [5, 10, 15, 20, 30]
             }
 
-            var options =  $.extend(defaults, options);
-
-            this.destroy = function() //The destroy method
-            {
-                /* remove the navigation bar & unbind click events */
-                $(this).removeClass('row');
-                $('#senbar').remove();
-                $('#senzill-styles').remove();
-                $('#sen-next').unbind();
-                $('#sen-previous').unbind();
+            var settings =  $.extend({}, defaults, settings);
+            
+            this.destroy = function(){
+                $(settings.nav).remove();
+                $(settings.panel).remove();
+                $('#sen-next, #sen-prev, #sen-select, #sen-searchBox, .numBtn').off();
                 
               return;
             }
-            return this.each(function() { /* Main Method */
-                var me = $(this);
-                var senbar_id_prefix = 0; //This is used to increment the id of the senbar in case of the usage of more than one senzill-pagination
-                options.elPerPage = parseInt(options.elPerPage); //Get integer from string (i.e if elPerPage is " 2e" it will become 2), Read More about `parseInt` in here: https://bit.ly/2DJkDNb
-                console.log('senzill-pagination plugin has been successfully loaded!\n');
-                if(!$(this).hasClass('row')) { $(this).addClass('row'); } //Add the class `row` to the senzill-pagination container
-                if(!$(this).hasClass('senzill-container')) { $(this).addClass('senzill-container'); }
-                $('.senzill-container').css('display','block');
-                
-                var total_elems = $(this).children().length; //The total number of elements
-                var current_page = 1; //The current page
-                var start = 0; //From which page should senzill-pagination start, default 0 which is the first page
-                var number_of_pages = (total_elems / options.elPerPage)  % 1 == 0 ?  (total_elems / options.elPerPage) :  (Math.ceil(total_elems / options.elPerPage)); //Calculation of the total number of pages
-                var styles = '.sen-btn{ width:auto; } .sen-current{font-weight:700;font-size:1.3vw;}'; //Basic styling for the senzill-pagination buttons
-                
-                $('head').append('<style id="senzill-styles">'+styles+'</style>'); //Adding the styles to the <head> tag
-                
-                $(this).css('visibility','visible'); //Making the senzill-pagination container visible
-                var senzsCount = function()
-                {
-                    if($('.sen-bar').length > 1){
-                        senbar_id_prefix == $('.sen-bar').length;
-                        console.log($('.sen-bar').length);
+            this.elemLimit = function(num){
+                setShowElems(num);
+            };
+
+            var checkSettings = function(){
+                if($(settings.nav) == undefined){
+                    throw new Error('navBar proprety is missing: a navbar container id has not been specified.');
+                }
+                else if($(settings.panel) === undefined){
+                    throw new Error('panel proprety is missing: a panel container id has not been specified.');
+                }
+            };
+            var loadStyles = function(){
+                $('#sen-current').css({
+                    'background-color': '#8d8c8c',
+                    'font-weight': '800',
+                    'font-size': '.75rem'
+                });        
+            };
+            return this.each(function(){
+                checkSettings();
+                var $element = $(this);
+                var elPerPage = settings.elPerPage;
+                var $nav = $(settings.nav);
+                var elems = $element.children();
+                var elemsCount = elems.length;
+                var currentPage = 0;
+                var totalPages = Math.ceil(elemsCount / elPerPage);
+                var numbered = settings.nums;
+                var _panel = (settings.panel != null) ? settings.panel : false;
+                var showOptions = settings.showOptions;
+                var items = elems;
+                if($.inArray(elPerPage, showOptions == false)){
+                    showOptions.push(elPerPage);
+                }
+                showOptions.sort(function(x, y){
+                    return x - y;
+                });
+
+                var setShowElems = function(num){
+                    if(typeof num != 'number'){
+                        throw new Error('The argument given to the setShowRes function is not a valid number.');
+                    }
+                    elPerPage = num;
+                    totalPages = Math.ceil(items.length / elPerPage);
+                };
+                var navbar = function(current, showPerPage, total){
+                    $nav.empty();
+
+                    var $bar = $nav.append('<ul/>', {
+                        class:'list-inline',
+                        id:'sen-bar'
+                    });
+                    
+                    $bar.css({
+                        
+                    });
+                    var $liPrev = $('<li/>',{
+                        class:'list-inline-item text-center',
+                    }).appendTo($bar);
+                    var $liCurrent = $('<li/>',{
+                        class:'list-inline-item text-center',
+                    }).appendTo($bar);
+                    var $liNext = $('<li/>',{
+                        class:'list-inline-item text-center',
+                    }).appendTo($bar);
+                    
+                    $("<button/>",  {
+                        'class' : 'btn btn-primary btn-sm senbtn', 
+                        text : 'Next >',
+                        id : 'sen-next',
+                      }).appendTo($liNext);
+                    $("<span/>",  {
+                        'class' : 'btn btn-sm senbtn ', 
+                        text : current + 1,
+                        id : 'sen-current',
+                        disabled: true
+                      }).appendTo($liCurrent);
+                    $("<button/>",  {
+                        'class' : 'btn btn-primary btn-sm senbtn', 
+                        text : '< Prev.',
+                        id: 'sen-prev',
+                      }).appendTo($liPrev);
+
+                    var $info = $('<div/>', {
+                        class:'text-center text-primary',
+                        id:'sen-info'
+                    });
+                    $info.prependTo($nav);
+                    var to = ((current * showPerPage) + showPerPage) > total ? total : (current * showPerPage) + showPerPage ;
+                    var text = total == 0 ? 'No results were found.' : 'Showing '+((current * elPerPage) + 1)+' to '+to 
+                    +' of '+total+' entries';
+                    var $infoText = $('<span/>', {
+                        text: text
+                    });
+                    $infoText.appendTo($info);
+                    $nav.wrapAll('<center/>');
+                };
+                var numberedNav = function(current, pages){
+                    
+                    if(current > 0){
+                        $senFirst = $("<span/>",  {
+                            'class' : 'btn btn-sm senbtn btn-info  numBtn', 
+                            'text' : '<<',
+                            'data-senpage': 0,
+                            'id' : 'sen-first',
+                            'disabled': true
+                        }).appendTo('<li/>', {
+                            'class': 'list-inline-item text-center'
+                        }).insertBefore('#sen-prev');
+                    }
+                    if(current < pages - 1){
+                        $("<span/>",  {
+                            'class' : 'btn btn-sm senbtn btn-info  numBtn', 
+                            'text' : '>>',
+                            'data-senpage': pages - 1,
+                            'id' : 'sen-last',
+                            'disabled': true
+                        }).appendTo('<li/>', {
+                            'class': 'list-inline-item text-center'
+                        }).insertAfter('#sen-next').css({
+                            
+                        });
+                    }
+                    if(current > 1){
+                        for(var i = current; i > current - 2; i--){
+                           if(i == 1){
+                               continue;
+                           }
+                            $("<span/>",  {
+                                'class' : 'btn btn-sm senbtn numBtn', 
+                                'text' : i,
+                                'data-senpage': i - 1,
+                            }).appendTo('<li/>', {
+                                'class': 'list-inline-item text-center'
+                            }).insertAfter('#sen-prev');
+                        }
+                    }
+                    if(current < pages - 2){
+                        for(var i = current; i < current+2; i++){
+                            if(i == pages - 1){
+                                continue;
+                            }
+                            $("<span/>",  {
+                                'class' : 'btn btn-sm senbtn numBtn', 
+                                'text' : i + 2,
+                                'data-senpage': i + 1,
+                            }).appendTo('<li/>', {
+                                'class': 'list-inline-item text-center'
+                            }).insertBefore('#sen-next');
+                        }
+                    }
+                };
+                var paginate = function(current, showPerPage, elements){
+                    var total = elements.length;
+                    var pages = Math.ceil(total / showPerPage);
+                    elems.hide();
+                    for(var i = current * showPerPage; i <  (current * showPerPage) + showPerPage; i++){
+                        $(elements[i]).fadeIn();
+                    }
+                    navbar(current, showPerPage, total); //Show the bottom navbar
+                    if(numbered){
+                        numberedNav(current, pages); //Show the numbered navbar
+                    }
+                    if(current == pages - 1 || pages == 0){
+                        $('#sen-next').attr('disabled', true);
                     }
                     else{
-                        return 0;
+                        $('#sen-next').attr('disabled', false);
                     }
-                };
-                senzsCount();
-
-                var paginate = function(start,end,elem = $(this)){ //The main paginate function that will let users navigate between pages
-                    for(j = 0; j < elem.children().length ;j++){
-                        elem.children().eq(j).slideUp().hide(500);
+                    if(current - 1 < 0 || pages == 0){
+                        $('#sen-prev').attr('disabled', true);
                     }
-                    for(i = start; i < end ;i++){
-                        elem.children().eq(i - 1).slideDown(500);;
+                    else{
+                        $('#sen-prev').attr('disabled', false);
                     }
-                };
-                var next = function(elem){ //This function will let the users go to the next page
-                    start = start+options.elPerPage;
-                    current_page++;
-                    paginate(start,start + options.elPerPage,elem);
-                    senbar_basic(number_of_pages,current_page,elem);
-                };
-                var prev = function(elem){ //This function will let the users go back to the previous page
-                    start = (start-options.elPerPage);
-                    current_page--;
-                    paginate(start,(start+options.elPerPage),elem);
-                    senbar_basic(number_of_pages,current_page,elem);
-                };
-                var senbar_basic = function(pages,current,elem = $(this)){ //Display the sen navigation bar, currently it only contains previous and next buttons.
-                    if($('#'+senbar_id_prefix+'_sen-bar').length){$('#'+senbar_id_prefix+'_sen-bar').remove();} //This line needs to be updated into a better implementation
-                                                                        //What it does is, removing the senbar each time a navigation button is clicked.
-                    $('#'+senbar_id_prefix+'_sen-bar').css('position','relative');
-                    var next_button = '<li class="list-inline-item"><button class="text-xs-center btn btn-primary sen-btn"  id="'+senbar_id_prefix+'_sen-next" href="#">Next</button></li>'; //Draw the next button
-                    var prev_button = '<li class="list-inline-item"><button class="text-xs-center btn btn-primary sen-btn" id="'+senbar_id_prefix+'_sen-prev" href="#">Previous</button></li>'; //Draw the previous button
-                    var pagination_bar = '<div class="row" class="sen-bar" id="'+senbar_id_prefix+'_sen-bar">' //Draw the senbar
-                                            +'<div class="col-md-4 mx-auto">'
-                                                +'<ul class="list-inline center">'
-                                                    + prev_button
-                                                    +'<li class="list-inline-item sen-current">'+ current +'</li>'
-                                                    + next_button
-                                                    +'</ul>'
-                                            +'</div>'
-                                        +'</div>';
-                    $(pagination_bar).insertAfter(elem);
-                    (current+1 > pages) ? $('#'+senbar_id_prefix+'_sen-next').addClass('disabled') : $('#'+senbar_id_prefix+'_sen-next').hasClass('disabled') ? $('#'+senbar_id_prefix+'_sen-next').removeClass('disabled') : '';
-                    (current == 1) ? $('#'+senbar_id_prefix+'_sen-prev').addClass('disabled') : $('#'+senbar_id_prefix+'_sen-prev').hasClass('disabled') ? $('#'+senbar_id_prefix+'_sen-prev').removeClass('disabled') : '';
-                    $('#'+senbar_id_prefix+'_sen-next').on('click',function(){
-                        if(current + 1 <= pages)
-                            next(me); //Go to the next page
+                    $('#sen-next, #sen-prev, #sen-select, #sen-searchBox, .numBtn').off();
+                    $('#sen-next').on('click', function(){
+                        currentPage = next(currentPage);
+                        paginate(currentPage, elPerPage, items);
                     });
-                    $('#'+senbar_id_prefix+'_sen-prev').on('click',function(){
-                        if(current > 1 )
-                            prev(me); //Go to the previous page
+                    $('#sen-prev').on('click', function(){
+                        currentPage = prev(currentPage);
+                        paginate(currentPage, elPerPage, items);
                     });
-                };
-                var numbered_senbar = function(){ //Senbar with numbers
+                    $('#sen-select').on('change', function(){
+                        var selected = $(this).find(":selected").data('elem-count');
+                        setShowElems(selected);
+                        currentPage = 0;
+                        paginate(currentPage, elPerPage, items);
+                    });
+                    var doneTypingInterval = 1000;
+                    var typingTimer;
+                    $('#sen-searchBox').on('keyup').on('input', function(){
+                        clearTimeout(typingTimer);
+                        var value = $(this).val();
+                        if(value.length > 0){
+                            
+                             var filter = elems.filter(function() {
+                                return $(this).text().indexOf(value) > -1;
+                            });
+                            typingTimer = setTimeout(function(){
+                                currentPage = 0;
+                                items = filter;
+                                paginate(currentPage, elPerPage, items);
+                            }, doneTypingInterval);
 
+                            $(this).val(value);
+                        }
+                        else{
+                            currentPage = 0;
+                            items = elems;
+                            paginate(currentPage, elPerPage, items);
+                        }
+                    });
+                    $('.numBtn').on('click', function(){
+                        currentPage = setPage($(this).data('senpage'));
+                        paginate(currentPage, elPerPage, items);
+                    });
+                    loadStyles(); //Load the styles
                 };
-                var epp_Options = function(){ //Elements per page options
+                var next = function(current){
+                    current++;
+                    $('#sen-current').text((current + 1).toString());
+                    return current;
+                };
+                var prev = function(current){
+                    current--;
+                    $('#sen-current').text((current + 1).toString());
+                    return current;
+                };
+                var setPage = function(pageNum){
+                    $('#sen-current').text(pageNum);
+                    return pageNum;
+                };
+                var panel = function(panel){
+                    $panel = $(panel);
+                    $panel.empty();
+                    var $entries = $('<form/>', {
+                        class: 'float-left',
+                        id:'sen-select-fg'
+                    });
+                    var $text_show = $('<span/>', {
+                        text: 'Show',
+                    });
+                    var $text_entries = $('<span/>', {
+                        text: 'entries',
+                    });
+                    var $select = $('<select/>', {
+                        class:'ml-1 mr-1',
+                        id:'sen-select'
+                    });
 
+                    $entries.appendTo($panel);
+                    $select.appendTo($entries);
+                    $text_show.prependTo($entries);
+                    $text_entries.appendTo($entries);
+                    $.each(showOptions, function(key, val){
+                        $('<option/>', {
+                            'class': 'sen-select-option',
+                            'data-elem-count': val,
+                            'selected': (elPerPage == val) ? true : false
+                        }).appendTo($select).text(val);
+                    });
+
+                    
+                    var $searchBox = $('<input/>', {
+                        type:'text',
+                        'id':'sen-searchBox'
+                    })
+                    var $searchLabel = $('<label/>', {
+                        for:'#sen-searchBox',
+                        class:'mr-1',
+                        text:'Search'
+                    })
+                    var $searchBoxDiv = $('<div/>', {
+                        class:'float-right',
+                        id:'sen-search'
+                    });
+
+                    $searchBoxDiv.append([ $searchLabel, $searchBox]);
+
+                    $searchBoxDiv.appendTo($panel);
+                    
+                    
+                };
+                
+                
+                if(_panel != false){
+                    panel(_panel);
                 }
-                var image_tags = function(){ //Display image tags buttons to filter by
-
-                };
-                var image_preview = function(){ //Preview images by clicking on it
-
-                };
-                var sortData = function(){ //Sort data by setting an HTML5 data attribute, i.e. data-uploaded='11/18/2018' or data-name='New York Hassle Article'
-                                            //In either cases senzill-pagination will figure out which way is better to sort the data (either; date, number or string)
-
-                };
-                var gridView = function(){
-
-                };
-                var listView = function(){
-
-                };
-                paginate(start,start + options.elPerPage,$(this)); //Start the senzill-pagination
-                senbar_basic(number_of_pages,current_page,$(this)); //Draw the senbar
+                
+                currentPage = 0;
+                paginate(currentPage, elPerPage, items);
+                
+                
 
             });
          
