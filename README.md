@@ -6,7 +6,7 @@
 
 > An easy to integrate jQuery paginator.
 
-#### Installation
+### Installation
 
 You can install *senzill-pagination* using one of the following methods:
 
@@ -26,7 +26,19 @@ You can install *senzill-pagination* using one of the following methods:
 npm install --save senzill-pagination
 ```
 
-#### Usage
+* **jsDelivr CDN:**
+
+```html
+<head>
+	...
+    <script src="jquery.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/yak0d3/senzill-pagination@2.0.0/senzill-pagination.js"></script>
+</head>
+```
+
+
+
+### Usage
 
 To start using *senzill-pagination* you have to follow simple steps to get your frontend pagination ready.
 
@@ -45,7 +57,7 @@ To start using *senzill-pagination* you have to follow simple steps to get your 
    });
    ```
 
-#### Parameters
+### Parameters
 
 The table displayed below explains all of the available parameters.
 
@@ -57,7 +69,7 @@ The table displayed below explains all of the available parameters.
 | `nums`        | No       | `true`              | `[Boolean]` Specifies whether to show a numbered navigation or not. |
 | `showOptions` | No       | [5, 10, 15, 20, 30] | `[Array]` The options to display inside the panel's `<select/>` <br />***Note:*** *If the* `elPerPage` *value is not in this array, it will be added automatically.* |
 
-#### Methods
+### Methods
 
 The following table describes the list of available methods.
 
@@ -66,6 +78,6 @@ The following table describes the list of available methods.
 | `elemLimit(int number)` | Sets the number of elements to display per page |
 | `destroy()`             | Destroys the *senzill-pagination* instance.     |
 
-#### License
+### License
 
 The MIT License. Copyright (c) 2018 [Raed Yak](https://github.com/yak0d3)
