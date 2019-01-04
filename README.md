@@ -65,7 +65,7 @@ The table displayed below explains all of the available parameters.
 | ------------- | -------- | ------------------- | ------------------------------------------------------------ |
 | `elPerPage`   | No       | `4`                 | `[Integer]` The number of elements to display per page.      |
 | `nav`         | Yes      | `null`              | `[String]` The navigation bar id.<br />***Note:*** *You have to create a div for the navbar and pass it as the* `nav` *parameter.* |
-| `panel`       | Yes      | `null`              | `[String]` The panel id.<br />***Note:*** *You have to create a div for the panel and pass it as the* `panel` *parameter.* |
+| `panel`       | No      | `null`              | `[String]` The panel id.<br />***Note:*** *You have to create a div for the panel and pass it as the* `panel` *parameter.* |
 | `nums`        | No       | `true`              | `[Boolean]` Specifies whether to show a numbered navigation or not. |
 | `showOptions` | No       | `[5, 10, 15, 20, 30]` | `[Array]` The options to display inside the panel's `<select/>` <br />***Note:*** *If the* `elPerPage` *value is not in this array, it will be added automatically.* |
 
