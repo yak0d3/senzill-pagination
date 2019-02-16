@@ -1,6 +1,6 @@
 {
   "name": "senzill-pagination",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Senzill-Pagination is an easy to integrate jQuery pagination plugin.",
   "main": "senzill-pagination.js",
   "scripts": {
