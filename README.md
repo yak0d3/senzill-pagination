@@ -10,13 +10,13 @@
 
 You can install *senzill-pagination* using one of the following methods:
 
-* **Local**: Including the senzill-pagination file to your page's `<head/>` tag like so:
+* **Download**: Download/Clone the *senzill-pagination* source code and add `senzill-pagination.js` to your `<head/>` tag
 
 ```html
 <head>
-	...
+    <link rel="stylesheet" type="text/css" href="bootstrap4.css">
     <script src="jquery.js"></script>
-	<script src="senzill-pagination.js"></script>
+    <script src="senzill-pagination.js"></script>
 </head>
 ```
 
@@ -30,9 +30,9 @@ npm install --save senzill-pagination
 
 ```html
 <head>
-	...
+    <link rel="stylesheet" type="text/css" href="bootstrap4.css">
     <script src="jquery.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/yak0d3/senzill-pagination@2.0.0/senzill-pagination.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/yak0d3/senzill-pagination@2.1.0/senzill-pagination.js"></script>
 </head>
 ```
 
@@ -77,7 +77,10 @@ The following table describes the list of available methods.
 | ----------------------- | ----------------------------------------------- |
 | `elemLimit(int number)` | Sets the number of elements to display per page |
 | `destroy()`             | Destroys the *senzill-pagination* instance.     |
+| `reload()`              | reloads the *senzill-pagination* instance.     |
+| `setPage(int pageNumber)`             | Destroys the *senzill-pagination* instance.     |
+| `getPage()`             | Returns the current page number     |
 
 ### License
 
-The MIT License. Copyright (c) 2018 [Raed Yak](https://github.com/yak0d3)
+The MIT License. Copyright (c) 2019 [Raed Yak](https://github.com/yak0d3)
